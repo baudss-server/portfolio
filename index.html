@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jerwin Lazaro | VA & Front-End Developer</title>
+    
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* Apply the Inter font family */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a; /* bg-slate-900 */
+            overflow-x: hidden; /* Prevent horizontal scroll from 3D effects */
+        }
+        /* Canvas for 3D background */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* Place canvas behind all content */
+        }
+    </style>
+</head>
+<body class="text-slate-300">
+    
+    <!-- Canvas for 3D Background -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- =========== Header =========== -->
+    <header class="bg-slate-900/80 backdrop-blur-sm sticky top-0 z-50 shadow-md shadow-black/20">
+        <nav class="container mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
+            <a href="#" class="flex items-center space-x-3">
+                <!-- SVG Logo -->
+                <svg class="w-10 h-10" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="100" cy="100" r="95" fill="#06b6d4" stroke="#0891b2" stroke-width="5"/>
+                    <text x="50%" y="50%" dominant-baseline="central" text-anchor="middle" font-family="Inter, sans-serif" font-size="90" font-weight="bold" fill="white">JL</text>
+                </svg>
+                <span class="text-xl font-bold text-slate-50">My Portfolio</span>
+            </a>
+            
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex space-x-8">
+                <a href="#about" class="text-slate-400 hover:text-cyan-400 transition-colors">About</a>
+                <a href="#projects" class="text-slate-400 hover:text-cyan-400 transition-colors">Projects</a>
+                <a href="#contact" class="text-slate-400 hover:text-cyan-400 transition-colors">Contact</a>
+            </div>
+            
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-button" class="md:hidden p-2 rounded-md hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-cyan-500">
+                <i data-lucide="menu" class="h-6 w-6 text-slate-300"></i>
+            </button>
+        </nav>
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden px-4 pt-2 pb-4 space-y-2 border-t border-slate-700">
+            <a href="#about" class="block text-slate-300 hover:text-cyan-400 hover:bg-slate-800 px-3 py-2 rounded-md">About</a>
+            <a href="#projects" class="block text-slate-300 hover:text-cyan-400 hover:bg-slate-800 px-3 py-2 rounded-md">Projects</a>
+            <a href="#contact" class="block text-slate-300 hover:text-cyan-400 hover:bg-slate-800 px-3 py-2 rounded-md">Contact</a>
+        </div>
+    </header>
+
+    <!-- =========== Main Content =========== -->
+    <main class="container mx-auto px-4 sm:px-6 py-16 relative z-10">
+
+        <!-- Hero Section -->
+        <section id="hero" class="text-center py-16">
+            
+            <!-- Live Photo Upload Area -->
+            <div class="relative w-32 h-32 md:w-40 md:h-40 mx-auto group">
+                <img id="profilePhoto" src="https://placehold.co/160x160/1e293b/94a3b8?text=Your+Photo" alt="Jerwin Lazaro Profile Photo" class="w-full h-full object-cover rounded-full shadow-lg border-4 border-slate-700">
+                <label for="photoUpload" class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-60 rounded-full cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity">
+                    <i data-lucide="upload" class="text-white w-8 h-8"></i>
+                </label>
+                <input type="file" id="photoUpload" class="hidden" accept="image/png, image/jpeg, image/jpg">
+            </div>
+            
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-50 leading-tight mt-6">Jerwin Lazaro</h1>
+            <p class="mt-3 text-lg md:text-xl text-cyan-400 font-semibold">Virtual Assistant & Front-End Developer</p>
+            <p class="mt-4 max-w-2xl mx-auto text-slate-400">
+                A detail-driven professional combining administrative expertise with a passion for building clean and user-friendly web experiences.
+            </p>
+            <div class="mt-8 flex flex-col sm:flex-row justify-center items-center gap-4">
+                <a href="#contact" class="w-full sm:w-auto bg-cyan-500 text-white font-semibold px-6 py-3 rounded-lg hover:bg-cyan-600 transition shadow-lg shadow-cyan-500/20">Contact Me</a>
+                <a href="#projects" class="w-full sm:w-auto bg-slate-800 text-slate-300 font-semibold px-6 py-3 rounded-lg border border-slate-600 hover:bg-slate-700 hover:border-slate-500 transition">View My Work</a>
+            </div>
+        </section>
+
+        <!-- About & Skills Section -->
+        <section id="about" class="py-24">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-slate-50">About Me</h2>
+                <p class="text-slate-400 mt-2">My background, skills, and what I can do for you.</p>
+            </div>
+            <div class="bg-slate-800/50 backdrop-blur-sm border border-slate-700 p-8 md:p-12 rounded-lg shadow-lg grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+                <div>
+                    <h3 class="text-xl font-semibold text-slate-50 mb-4">Get to know me!</h3>
+                    <p class="text-slate-400 space-y-4">
+                        I have a strong background in administrative support roles where I've honed my skills in data entry, organization, and customer service. My experience has taught me the importance of accuracy and reliability.
+                        <br><br>
+                        Driven by a passion for technology, I am now focusing on front-end development. I enjoy solving problems and creating beautiful, functional websites. I am a fast learner, eager to apply my technical skills to real-world projects and contribute to a team's success.
+                    </p>
+                </div>
+                <div class="space-y-6">
+                    <div>
+                        <h4 class="text-lg font-semibold text-slate-200">Front-End Development</h4>
+                        <div class="flex flex-wrap gap-2 mt-2">
+                            <span class="bg-cyan-900/50 text-cyan-300 text-sm font-medium px-3 py-1 rounded-full border border-cyan-800">HTML</span>
+                            <span class="bg-cyan-900/50 text-cyan-300 text-sm font-medium px-3 py-1 rounded-full border border-cyan-800">CSS</span>
+                            <span class="bg-cyan-900/50 text-cyan-300 text-sm font-medium px-3 py-1 rounded-full border border-cyan-800">JavaScript</span>
+                            <span class="bg-cyan-900/50 text-cyan-300 text-sm font-medium px-3 py-1 rounded-full border border-cyan-800">Tailwind CSS</span>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-semibold text-slate-200">Administrative & Digital Tools</h4>
+                        <div class="flex flex-wrap gap-2 mt-2">
+                            <span class="bg-slate-700 text-slate-300 text-sm font-medium px-3 py-1 rounded-full">Data Entry</span>
+                            <span class="bg-slate-700 text-slate-300 text-sm font-medium px-3 py-1 rounded-full">Google Workspace</span>
+                            <span class="bg-slate-700 text-slate-300 text-sm font-medium px-3 py-1 rounded-full">Microsoft Office</span>
+                            <span class="bg-slate-700 text-slate-300 text-sm font-medium px-3 py-1 rounded-full">Email & Chat Support</span>
+                            <span class="bg-slate-700 text-slate-300 text-sm font-medium px-3 py-1 rounded-full">Capcut & Power Director</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects" class="py-24">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-slate-50">Projects</h2>
+                <p class="text-slate-400 mt-2">Here's some of the work I'm proud of.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 [perspective:1000px]">
+                
+                <div class="group bg-slate-800/50 border border-slate-700 rounded-lg shadow-lg overflow-hidden transition-transform duration-500 [transform-style:preserve-3d] hover:[transform:rotateY(10deg)] flex flex-col">
+                    <img src="assets/images/ss2.png" alt="Reviewer Project Screenshot" class="w-full h-48 object-cover">
+                    <div class="p-6 flex flex-col flex-grow">
+                        <h3 class="text-xl font-semibold mb-2 text-slate-50">Interactive Study Reviewer</h3>
+                        <p class="text-slate-400 mb-4 flex-grow">A dynamic web-based reviewer with interactive elements, designed for a clean and focused user learning experience.</p>
+                    </div>
+                </div>
+
+                <div class="group bg-slate-800/50 border border-slate-700 rounded-lg shadow-lg overflow-hidden transition-transform duration-500 [transform-style:preserve-3d] hover:[transform:rotateY(10deg)] flex flex-col">
+                    <img src="assets/images/ss1.png" alt="Fuzzy Wire Shop Screenshot" class="w-full h-48 object-cover">
+                    <div class="p-6 flex flex-col flex-grow">
+                        <h3 class="text-xl font-semibold mb-2 text-slate-50">Fuzzy Wire Creations Shop</h3>
+                        <p class="text-slate-400 mb-4 flex-grow">A vibrant e-commerce landing page for a handmade craft business, designed to be visually engaging and drive sales.</p>
+                    </div>
+                </div>
+
+                 <div class="group bg-slate-800/50 border border-slate-700 rounded-lg shadow-lg overflow-hidden transition-transform duration-500 [transform-style:preserve-3d] hover:[transform:rotateY(10deg)] flex flex-col">
+                    <img src="assets/images/ss3.png" alt="Business Card Screenshot" class="w-full h-48 object-cover">
+                    <div class="p-6 flex flex-col flex-grow">
+                        <h3 class="text-xl font-semibold mb-2 text-slate-50">Digital Business Card</h3>
+                        <p class="text-slate-400 mb-4 flex-grow">A sleek, modern, and fully responsive digital business card. A minimalist design for sharing contact info professionally.</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="py-24">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-slate-50">Get In Touch</h2>
+                <p class="text-slate-400 mt-2 max-w-lg mx-auto">I'm currently looking for new opportunities. My inbox is always open, feel free to reach out!</p>
+            </div>
+
+            <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                <div class="bg-slate-800/50 border border-slate-700 p-6 rounded-lg shadow-lg flex flex-col items-center">
+                    <div class="bg-cyan-900/50 text-cyan-400 rounded-full p-3 mb-4 border border-cyan-800">
+                        <i data-lucide="mail" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="font-semibold text-lg text-slate-200">Email</h3>
+                    <a href="mailto:jerw3345@gmail.com" class="text-slate-400 hover:text-cyan-400 break-all">jerw3345@gmail.com</a>
+                </div>
+                <div class="bg-slate-800/50 border border-slate-700 p-6 rounded-lg shadow-lg flex flex-col items-center">
+                    <div class="bg-cyan-900/50 text-cyan-400 rounded-full p-3 mb-4 border border-cyan-800">
+                        <i data-lucide="phone" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="font-semibold text-lg text-slate-200">Phone</h3>
+                    <a href="tel:09695760172" class="text-slate-400 hover:text-cyan-400">0969 576 0172</a>
+                </div>
+                <div class="bg-slate-800/50 border border-slate-700 p-6 rounded-lg shadow-lg flex flex-col items-center">
+                    <div class="bg-cyan-900/50 text-cyan-400 rounded-full p-3 mb-4 border border-cyan-800">
+                        <i data-lucide="map-pin" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="font-semibold text-lg text-slate-200">Location</h3>
+                    <p class="text-slate-400">San Miguel, Bulacan, PH</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- =========== Footer =========== -->
+    <footer class="bg-slate-950/50 border-t border-slate-800">
+        <div class="container mx-auto px-4 sm:px-6 py-8 text-center">
+            <div class="flex justify-center items-center flex-wrap gap-x-6 gap-y-4 md:gap-x-8 mb-8">
+                <!-- PALITAN ANG MGA PLACEHOLDER NG IYONG INFO -->
+                <a href="https://mail.google.com/mail/?view=cm&fs=1&to=jerw3345@gmail.com" target="_blank" class="relative group text-slate-400 hover:text-cyan-400 transition-colors">
+                    <i data-lucide="mail" class="w-7 h-7"></i>
+                    <span class="absolute -top-10 left-1/2 -translate-x-1/2 px-2 py-1 bg-slate-950 text-white text-xs rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-300 whitespace-nowrap">Gmail</span>
+                </a>
+                <a href="https://www.instagram.com/jerjers20" target="_blank" class="relative group text-slate-400 hover:text-cyan-400 transition-colors">
+                    <i data-lucide="instagram" class="w-7 h-7"></i>
+                    <span class="absolute -top-10 left-1/2 -translate-x-1/2 px-2 py-1 bg-slate-950 text-white text-xs rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-300 whitespace-nowrap">Instagram</span>
+                </a>
+                <a href="https://www.facebook.com/jer.win.164068" target="_blank" class="relative group text-slate-400 hover:text-cyan-400 transition-colors">
+                    <i data-lucide="facebook" class="w-7 h-7"></i>
+                    <span class="absolute -top-10 left-1/2 -translate-x-1/2 px-2 py-1 bg-slate-950 text-white text-xs rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-300 whitespace-nowrap">Facebook</span>
+                </a>
+                <a href="https://t.me/Baudss" target="_blank" class="relative group text-slate-400 hover:text-cyan-400 transition-colors">
+                    <i data-lucide="send" class="w-7 h-7"></i>
+                    <span class="absolute -top-10 left-1/2 -translate-x-1/2 px-2 py-1 bg-slate-950 text-white text-xs rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-300 whitespace-nowrap">Telegram</span>
+                </a>
+            </div>
+            <p class="text-slate-500 text-sm">&copy; 2024 Jerwin Lazaro. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Three.js Library -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js"
+            }
+        }
+    </script>
+    
+    <!-- Main JavaScript -->
+    <script type="module">
+        import * as THREE from 'three';
+
+        // Lucide Icons
+        lucide.createIcons();
+
+        // Mobile Menu Toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Live Photo Upload
+        const photoUpload = document.getElementById('photoUpload');
+        const profilePhoto = document.getElementById('profilePhoto');
+        photoUpload.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    profilePhoto.src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // --- Three.js 3D Background ---
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({
+            canvas: document.querySelector('#bg-canvas'),
+            alpha: true // Make canvas transparent
+        });
+
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        camera.position.setZ(30);
+
+        // Stars/Particles
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesCount = 5000;
+        const posArray = new Float32Array(particlesCount * 3);
+
+        for (let i = 0; i < particlesCount * 3; i++) {
+            posArray[i] = (Math.random() - 0.5) * 200;
+        }
+
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+
+        const particlesMaterial = new THREE.PointsMaterial({
+            size: 0.05,
+            color: 0x06b6d4 // Cyan color
+        });
+
+        const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particlesMesh);
+
+        // Animation Loop
+        const clock = new THREE.Clock();
+        const animate = () => {
+            const elapsedTime = clock.getElapsedTime();
+            
+            particlesMesh.rotation.y = elapsedTime * 0.05;
+            particlesMesh.rotation.x = elapsedTime * 0.02;
+
+            renderer.render(scene, camera);
+            window.requestAnimationFrame(animate);
+        };
+        animate();
+
+        // Handle Window Resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        });
+
+    </script>
+</body>
+</html>
+
