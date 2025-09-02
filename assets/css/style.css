@@ -1,0 +1,42 @@
+body {
+    font-family: 'Space Grotesk', sans-serif;
+    background-color: #0f172a; /* bg-slate-900 */
+    overflow-x: hidden;
+    position: relative;
+}
+
+#bg-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+main {
+    perspective: 1000px;
+}
+
+#mobile-menu {
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+#mobile-menu.is-open {
+    max-height: 500px; 
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+/* FIX PARA SA SWEETALERT SA MOBILE VIEW */
+@media (max-width: 640px) {
+    .custom-swal-width {
+        width: 90% !important;
+    }
+}
