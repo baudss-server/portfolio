@@ -1,14 +1,14 @@
 /*
- * FINAL CODE v3: Automatic Image Compression + Base64 to Firestore
- * - Awtomatikong pinapaliit ang malalaking images bago i-convert sa Base64.
- * - Iniiwasan ang 1 MB Firestore limit para sa karamihan ng mga files.
- * - HINDI pa rin kailangan ng GSUTIL o CORS setup.
+ * FINAL CODE v4: With Image Fetching on Load
+ * - Awtomatikong kinukuha ang huling na-upload na picture mula sa Firestore tuwing naglo-load ang page.
+ * - Tinitiyak na pare-pareho ang nakikitang profile picture sa lahat ng devices.
 */
 
 // Import the functions you need from the SDKs
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import * as THREE from 'three';
+
 
 // === FIREBASE CONFIGURATION ===
 const firebaseConfig = {
@@ -24,10 +24,10 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 // === CONTACT FORM LOGIC ===
-const APPSCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyX_8XE3wJPnCzMLpV_itFEF1tUB7iblUchBn7j35pQSnvwx6HkMMwMUouNSj7RGdh-/exec';
+const APPSCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyX_8XE3tWwt48FVWF8FBeKMqJ7kXg/exec'; // Palitan kung iba na
 const contactForm = document.getElementById('contact-form');
 if (contactForm) {
-    // (Ang contact form logic mo ay pareho pa rin, hindi kailangang baguhin)
+    // (Ang contact form logic mo ay pareho pa rin)
     const submitButton = contactForm.querySelector('button[type="submit"]');
     contactForm.addEventListener('submit', function (event) {
         event.preventDefault();
@@ -43,123 +43,111 @@ if (contactForm) {
     });
 }
 
-// === BAGONG FUNCTION: Para i-compress ang image gamit ang Canvas ===
+// === BAGONG FUNCTION: Para i-compress ang image ===
 function compressImage(file, options = {}) {
     return new Promise((resolve, reject) => {
         const { maxWidth = 800, quality = 0.7 } = options;
-        
         const reader = new FileReader();
         reader.readAsDataURL(file);
-
         reader.onload = (event) => {
             const img = new Image();
             img.src = event.target.result;
-
             img.onload = () => {
                 let width = img.width;
                 let height = img.height;
-
-                // Paliitin ang sukat kung mas malaki sa maxWidth
                 if (width > maxWidth) {
                     height *= maxWidth / width;
                     width = maxWidth;
                 }
-
                 const canvas = document.createElement('canvas');
                 canvas.width = width;
                 canvas.height = height;
-
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
-
-                // I-convert ang canvas sa Base64 na may JPEG quality
                 const compressedBase64 = canvas.toDataURL('image/jpeg', quality);
                 resolve(compressedBase64);
             };
-
             img.onerror = (error) => reject(error);
         };
-
         reader.onerror = (error) => reject(error);
     });
+}
+
+// === BAGONG FUNCTION: Para kunin ang huling picture mula sa Firestore ===
+async function loadLatestProfilePicture() {
+    const profilePhotoImage = document.getElementById('profilePhoto');
+    try {
+        // Gumawa ng query para kunin ang documents, naka-order by `uploadedAt` (pinakabago una), limit 1.
+        const q = query(collection(db, "profileImagesBase64"), orderBy("uploadedAt", "desc"), limit(1));
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+            // Kunin ang unang document (na siyang pinakabago)
+            const latestImageDoc = querySnapshot.docs[0];
+            const imageData = latestImageDoc.data().imageData;
+            // Ilagay ang Base64 string sa src ng image
+            profilePhotoImage.src = imageData;
+        } else {
+            console.log("No profile image found in Firestore.");
+        }
+    } catch (error) {
+        console.error("Error loading profile picture:", error);
+    }
 }
 
 
 // === ALL OTHER PAGE SCRIPTS ===
 document.addEventListener('DOMContentLoaded', () => {
     lucide.createIcons();
+    
+    // TATAWAGIN ANG BAGONG FUNCTION PAGKA-LOAD NG PAGE
+    loadLatestProfilePicture();
+
     // (Mobile Menu & Nav Logic - pareho pa rin)
     const navLinks = document.querySelectorAll('.nav-link');
     const mobileMenu = document.getElementById('mobile-menu');
     navLinks.forEach(link => { link.addEventListener('click', () => { if (mobileMenu.classList.contains('is-open')) mobileMenu.classList.remove('is-open'); }); });
     const mobileMenuButton = document.getElementById('mobile-menu-button');
     mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('is-open'));
-
     
-    // --- PHOTO UPLOAD LOGIC (BINAGO: May Automatic Compression na) ---
+    // --- PHOTO UPLOAD LOGIC ---
     const photoUploadInput = document.getElementById('photoUpload');
-    const profilePhotoImage = document.getElementById('profilePhoto');
     
     photoUploadInput.addEventListener('change', async (event) => {
         const file = event.target.files[0];
         if (!file) return;
 
         Swal.fire({
-            title: 'Compressing & Saving...',
-            text: 'Please wait, making your image ready.',
-            allowOutsideClick: false,
-            didOpen: () => { Swal.showLoading(); },
-            customClass: { popup: 'custom-swal-width' }
+            title: 'Compressing & Saving...', text: 'Please wait, making your image ready.', allowOutsideClick: false,
+            didOpen: () => { Swal.showLoading(); }, customClass: { popup: 'custom-swal-width' }
         });
 
         try {
-            // 1. I-compress muna ang image
-            const compressedBase64 = await compressImage(file, {
-                maxWidth: 800, // Papalitan ang laki ng image na max 800px ang lapad
-                quality: 0.7   // Quality ng JPEG (70%)
-            });
-
-            // 2. I-check ang size ng compressed image
-            // Ang 1 MB Firestore limit ay 1,048,576 bytes. Para safe, 950,000 ang limit natin.
+            const compressedBase64 = await compressImage(file, { maxWidth: 800, quality: 0.7 });
             const FIRESTORE_LIMIT_BYTES = 950000;
-            // Tinatayang laki ng Base64 string sa bytes
-            const stringSizeInBytes = new Blob([compressedBase64]).size; 
-            
+            const stringSizeInBytes = new Blob([compressedBase64]).size;
             if (stringSizeInBytes > FIRESTORE_LIMIT_BYTES) {
-                // Kahit na-compress na, malaki pa rin. Mag-error na.
                 throw new Error("Image is still too large after compression.");
             }
-
-            // 3. I-save ang compressed Base64 string sa Firestore
             await addDoc(collection(db, "profileImagesBase64"), {
-                imageData: compressedBase64,
-                fileName: `compressed-${file.name}`,
-                uploadedAt: serverTimestamp()
+                imageData: compressedBase64, fileName: `compressed-${file.name}`, uploadedAt: serverTimestamp()
             });
-
-            // 4. I-update ang profile photo sa page
-            profilePhotoImage.src = compressedBase64;
+            
+            // Pagkatapos mag-upload, i-reload natin para siguradong updated
+            await loadLatestProfilePicture();
 
             Swal.fire({
-                title: 'Success!',
-                text: 'Your photo was compressed and updated successfully.',
-                icon: 'success',
-                confirmButtonColor: '#06b6d4',
-                customClass: { popup: 'custom-swal-width' }
+                title: 'Success!', text: 'Your photo was compressed and updated successfully.', icon: 'success', confirmButtonColor: '#06b6d4', customClass: { popup: 'custom-swal-width' }
             });
 
         } catch (error) {
             console.error("Error during image processing:", error);
             Swal.fire({
                 title: 'Processing Failed',
-                text: error.message === "Image is still too large after compression." 
-                    ? "The original image is too large to compress enough. Please use a smaller file."
-                    : "There was a problem processing your image. Please try again.",
-                icon: 'error',
-                confirmButtonColor: '#06b6d4',
-                customClass: { popup: 'custom-swal-width' }
+                text: error.message === "Image is still too large after compression." ? "The original image is too large. Please use a smaller file." : "There was a problem processing your image.",
+                icon: 'error', confirmButtonColor: '#06b6d4', customClass: { popup: 'custom-swal-width' }
             });
-            photoUploadInput.value = ""; // I-reset ang file input
+            photoUploadInput.value = "";
         }
     });
 
